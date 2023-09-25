@@ -37,6 +37,8 @@ public class JiraWrapperService {
         fieldDto.setIssuetype(issueType);
         jiraCreateIssueRequestDto.setFields(fieldDto);
         return  jiraCreateIssueRequestDto;
-
+    }
+    public JiraCreateIssueResponseDto CallCreateIssueWithParams(JiraCreateIssueRequestDto requestDto){
+        return jiraClient.callJiraApi(requestDto);
     }
 }

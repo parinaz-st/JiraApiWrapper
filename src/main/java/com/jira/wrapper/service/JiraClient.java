@@ -27,10 +27,6 @@ public class JiraClient {
             HttpHeaders headers = initHeaders();
             HttpEntity<JiraCreateIssueRequestDto> httpEntity = new HttpEntity<>(requestDto, headers);
             Object result= restTemplateClient.postForObject(url, httpEntity, Object.class);
-//            JiraCreateIssueResponseDto jiraCreateIssueResponseDto = new JiraCreateIssueResponseDto();
-//            jiraCreateIssueResponseDto.setId("");
-//            jiraCreateIssueResponseDto.setKey("");
-//            jiraCreateIssueResponseDto.setSelf("");
             return (JiraCreateIssueResponseDto) result;
         }
         catch (Exception ex){
@@ -39,7 +35,6 @@ public class JiraClient {
         }
     }
 
-    //Basic AUthentication ---- TO DO
     private HttpHeaders initHeaders() {
         return new HttpHeaders() {{
             String auth = username + ":" + password;
