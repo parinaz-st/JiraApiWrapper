@@ -1,24 +1,27 @@
 package com.jira.wrapper.service;
 
 import com.jira.wrapper.dto.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class JiraWrapperService {
 
-    @Value("jira.input.key")
+    @Value("${jira.input.key}")
     private String key;
-    @Value("jira.input.summary")
+    @Value("${jira.input.summary}")
     private String summary;
-    @Value("jira.input.description")
+    @Value("${jira.input.description}")
     private String description;
-    @Value("jira.input.name")
+    @Value("${jira.input.name}")
     private String name;
 
+    @Autowired
+     JiraClient jiraClient;
     public JiraCreateIssueResponseDto CallCreateIssue(){
-        JiraCreateIssueResponseDto jiraCreateIssueResponseDto = new JiraCreateIssueResponseDto();
         JiraCreateIssueRequestDto jiraCreateIssueRequestDto = populateJiraRequest();
-
-        return jiraCreateIssueResponseDto;
+        return jiraClient.callJiraApi(jiraCreateIssueRequestDto);
     }
 
     private JiraCreateIssueRequestDto populateJiraRequest(){
