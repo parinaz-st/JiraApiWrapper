@@ -3,6 +3,8 @@ package com.jira.wrapper.service;
 import com.jira.wrapper.dto.JiraCreateIssueRequestDto;
 import com.jira.wrapper.dto.JiraCreateIssueResponseDto;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,6 +13,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.LinkedHashMap;
+
 @Component
 public class JiraClient {
     @Value("${jira.service.url}")
@@ -23,18 +28,24 @@ public class JiraClient {
     RestTemplate restTemplateClient;
 
     public JiraCreateIssueResponseDto callJiraApi(JiraCreateIssueRequestDto requestDto){
+        Logger logger = LoggerFactory.getLogger(JiraCreateIssueResponseDto.class);
         try{
+            JiraCreateIssueResponseDto jiraCreateIssueResponseDto = new JiraCreateIssueResponseDto();
             HttpHeaders headers = initHeaders();
             HttpEntity<JiraCreateIssueRequestDto> httpEntity = new HttpEntity<>(requestDto, headers);
             Object result= restTemplateClient.postForObject(url, httpEntity, Object.class);
-            return (JiraCreateIssueResponseDto) result;
+
+            jiraCreateIssueResponseDto.setId(((LinkedHashMap) result).get("id").toString());
+            jiraCreateIssueResponseDto.setKey(((LinkedHashMap) result).get("key").toString());
+            jiraCreateIssueResponseDto.setSelf(((LinkedHashMap) result).get("self").toString());
+            return jiraCreateIssueResponseDto;
         }
         catch (Exception ex){
             ex.printStackTrace();
+            logger.error(ex.getMessage());
             throw ex;
         }
     }
-
     private HttpHeaders initHeaders() {
         return new HttpHeaders() {{
             String auth = username + ":" + password;
