@@ -38,9 +38,12 @@ public class JiraClient {
             jiraCreateIssueResponseDto.setId(((LinkedHashMap) result).get("id").toString());
             jiraCreateIssueResponseDto.setKey(((LinkedHashMap) result).get("key").toString());
             jiraCreateIssueResponseDto.setSelf(((LinkedHashMap) result).get("self").toString());
+            logger.info("Task Created, Id: " + ((LinkedHashMap) result).get("id").toString() + " , key: " + ((LinkedHashMap) result).get("key").toString() + " , self: " + ((LinkedHashMap) result).get("self").toString());
+
             return jiraCreateIssueResponseDto;
         }
         catch (Exception ex){
+            logger.error("Exception in Service Call");
             ex.printStackTrace();
             logger.error(ex.getMessage());
             throw ex;

@@ -28,16 +28,23 @@ public class AppConfig {
 
     @Value("${trust.store.password}")
     private String trustStorePass;
+    @Value("${ssl.enabled}")
+    private String sslEnabled;
     @Bean
     public RestTemplate restTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
             CertificateException, MalformedURLException, IOException {
+        if("true".equals(sslEnabled)){
+            SSLContext sslContext = new SSLContextBuilder()
+                    .loadTrustMaterial(trustStore.getURL(), trustStorePass.toCharArray()).build();
+            SSLConnectionSocketFactory sslConFactory = new SSLConnectionSocketFactory(sslContext);
 
-        SSLContext sslContext = new SSLContextBuilder()
-                .loadTrustMaterial(trustStore.getURL(), trustStorePass.toCharArray()).build();
-        SSLConnectionSocketFactory sslConFactory = new SSLConnectionSocketFactory(sslContext);
+            CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslConFactory).build();
+            ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+            return new RestTemplate(requestFactory);
+        }
+        else{
+            return new RestTemplate();
+        }
 
-        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslConFactory).build();
-        ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        return new RestTemplate(requestFactory);
     }
 }
